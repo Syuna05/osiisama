@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>押井ガチャ</title>
+  <title>チベスナガチャ</title>
   <style>
     body {
       font-family: sans-serif;
@@ -76,24 +76,12 @@
   </style>
 </head>
 <body>
-  <h1>押井ガチャ</h1>
-  <p class="subtitle">【押井に使ってもらうキャラを選ぼう※押井さんに拒否権はありません】</p>
+  <h1>チベスナガチャ</h1>
+  <p class="subtitle">【チベスナに使ってもらうキャラを選ぼう※チベスナに拒否権はありません】</p>
   <button onclick="drawCharacters()">ガチャを引く！</button>
   <div class="result-container" id="result"></div>
 
   <script>
-    const characterNames = [
-      "グリフィン", "スズラン", "影", "キャヴァリー", "ラジエル",
-      "エルフィン", "シュウウ", "ヒカリ", "ケルビム", "ライン", "ロタ", "イーザ",
-      "18号", "アンジェリス", "フリード", "シグナス", "アリス", "カゼ", "ヴァルキア", "エヴァ",
-      "轟雷", "シャープ", "スカイセーバー", "シャオリン", "稲", "ノーラ", "バーゼラルド",
-      "チンニ", "ザハロワ", "ダークスター",
-      "セラフィム", "ヴァーチェ", "エミカ", "スコーピオン", "パラス",
-      "ヒビキ", "アイーダ", "スティレット", "デュカリオン", "ベータ",
-      "カタリナ", "オーキッド", "スノーウォル", "ローランド", "ヤミン",
-      "高山" // ← 46番目
-    ];
-
     const awakenings = [
       { rank: "F覚醒", class: "F" },
       { rank: "S覚醒", class: "S" },
@@ -102,13 +90,37 @@
       { rank: "B覚醒", class: "B" }
     ];
 
-    // キャラ配列生成（高山だけ特別にファイル名指定）
-    const characters = characterNames.map((name, index) => {
+    // キャラ一覧（確率用に出現数調整）
+    const baseCharacters = [
+      "グリフィン", "スズラン", "影",
+      // キャヴァリー：1%
+      "キャヴァリー",
+      // シュウウ：50%
+      ...Array(50).fill("シュウウ"),
+      "ラジエル", "エルフィン", "ヒカリ", "ケルビム", "ライン", "ロタ", "イーザ",
+      "18号", "アンジェリス", "フリード", "シグナス", "アリス", "カゼ", "ヴァルキア", "エヴァ",
+      "轟雷", "シャープ", "スカイセーバー", "シャオリン", "稲", "ノーラ", "バーゼラルド",
+      "チンニ", "ザハロワ", "ダークスター", "セラフィム", "ヴァーチェ", "エミカ", "スコーピオン", "パラス",
+      "ヒビキ", "アイーダ", "スティレット", "デュカリオン", "ベータ",
+      "カタリナ", "オーキッド", "スノーウォル", "ローランド",
+      // "ヤミン"は出現させない
+      "高山"
+    ];
+
+    // 重複を避けるために画像ファイル名を保持
+    const imageMap = {};
+    let indexCounter = 1;
+
+    const characters = baseCharacters.map(name => {
       if (name === "高山") {
         return { name, file: "高山.png" };
       }
-      const num = index + 1;
-      return { name, file: `item${num}.png` };
+
+      if (!imageMap[name]) {
+        imageMap[name] = `item${indexCounter++}.png`;
+      }
+
+      return { name, file: imageMap[name] };
     });
 
     function drawCharacters() {
@@ -117,7 +129,16 @@
 
       // ランダムに4体選出（重複なし）
       const shuffled = characters.slice().sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 4);
+      const selected = [];
+      const usedNames = new Set();
+
+      for (const char of shuffled) {
+        if (!usedNames.has(char.name)) {
+          selected.push(char);
+          usedNames.add(char.name);
+        }
+        if (selected.length === 4) break;
+      }
 
       selected.forEach(char => {
         const box = document.createElement('div');
