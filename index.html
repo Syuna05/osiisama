@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>押井ガチャ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1em;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 6px;
+      background-color: #3366cc;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 30px;
+    }
+
+    button:hover {
+      background-color: #224499;
+    }
+
+    .result-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .char-box {
+      width: 150px;
+      text-align: center;
+    }
+
+    .char-box img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(255,255,255,0.2);
+    }
+
+    .char-name {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    .awakening {
+      margin-top: 4px;
+      font-weight: bold;
+    }
+
+    .awakening.F { color: red; }
+    .awakening.S { color: #00f; }
+    .awakening.M { color: #ff0; }
+    .awakening.D { color: #0f0; }
+    .awakening.B { color: #aaa; }
+  </style>
+</head>
+<body>
+  <h1>押井ガチャ</h1>
+  <p class="subtitle">【押井に使ってもらうキャラを選ぼう※押井さんに拒否権はありません】</p>
+  <button onclick="drawCharacters()">ガチャを引く！</button>
+  <div class="result-container" id="result"></div>
+
+  <script>
+    const characterNames = [
+      "グリフィン", "スズラン", "影", "キャヴァリー", "ラジエル",
+      "エルフィン", "シュウウ", "ヒカリ", "ケルビム", "ライン", "ロタ", "イーザ",
+      "18号", "アンジェリス", "フリード", "シグナス", "アリス", "カゼ", "ヴァルキア", "エヴァ",
+      "轟雷", "シャープ", "スカイセーバー", "シャオリン", "稲", "ノーラ", "バーゼラルド",
+      "チンニ", "ザハロワ", "ダークスター",
+      "セラフィム", "ヴァーチェ", "エミカ", "スコーピオン", "パラス",
+      "ヒビキ", "アイーダ", "スティレット", "デュカリオン", "ベータ",
+      "カタリナ", "オーキッド", "スノーウォル", "ローランド", "ヤミン",
+      "高山" // ← 46番目
+    ];
+
+    const awakenings = [
+      { rank: "F覚醒", class: "F" },
+      { rank: "S覚醒", class: "S" },
+      { rank: "M覚醒", class: "M" },
+      { rank: "D覚醒", class: "D" },
+      { rank: "B覚醒", class: "B" }
+    ];
+
+    // キャラ配列生成（高山だけ特別にファイル名指定）
+    const characters = characterNames.map((name, index) => {
+      if (name === "高山") {
+        return { name, file: "高山.png" };
+      }
+      const num = index + 1;
+      return { name, file: `item${num}.png` };
+    });
+
+    function drawCharacters() {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
+
+      // ランダムに4体選出（重複なし）
+      const shuffled = characters.slice().sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 4);
+
+      selected.forEach(char => {
+        const box = document.createElement('div');
+        box.className = 'char-box';
+
+        const img = document.createElement('img');
+        img.src = `Images/${char.file}`;
+        img.alt = char.name;
+
+        const name = document.createElement('div');
+        name.className = 'char-name';
+        name.textContent = char.name;
+
+        const awakening = awakenings[Math.floor(Math.random() * awakenings.length)];
+        const awakeningDiv = document.createElement('div');
+        awakeningDiv.className = `awakening ${awakening.class}`;
+        awakeningDiv.textContent = awakening.rank;
+
+        box.appendChild(img);
+        box.appendChild(name);
+        box.appendChild(awakeningDiv);
+        resultDiv.appendChild(box);
+      });
+    }
+  </script>
+</body>
+</html>
